@@ -1,5 +1,5 @@
-import { StudentCourse } from 'src/student_courses/student-course.entity';
-import { Module } from '../modules/module.entity';
+import { StudentCourse } from 'src/student_courses/entity/student-course.entity';
+import { ModuleEntity } from '../../modules/entity/module.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
@@ -25,8 +25,10 @@ export class Course {
   @Column()
   level: string;
 
-  @OneToMany(() => Module, (module) => module.course, { onDelete: 'CASCADE' })
-  module: Module;
+  @OneToMany(() => ModuleEntity, (module) => module.course, {
+    onDelete: 'CASCADE',
+  })
+  module: ModuleEntity;
 
   @OneToMany(() => StudentCourse, (sc) => sc.course)
   studentCourses: StudentCourse[];

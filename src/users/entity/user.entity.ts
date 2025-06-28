@@ -1,4 +1,5 @@
-import { StudentCourse } from 'src/student_courses/student-course.entity';
+import { Assignment } from 'src/assignment/entity/assignment.entity';
+import { StudentCourse } from 'src/student_courses/entity/student-course.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
@@ -20,4 +21,7 @@ export class User {
 
   @OneToMany(() => StudentCourse, (sc) => sc.student)
   studentCourses: StudentCourse[];
+
+  @OneToMany(() => Assignment, (a) => a.student)
+  assignments: Assignment[];
 }

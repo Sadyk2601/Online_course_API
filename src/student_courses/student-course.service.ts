@@ -1,10 +1,10 @@
 // src/student_courses/student-courses.service.ts
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { StudentCourse } from './student-course.entity';
+import { StudentCourse } from './entity/student-course.entity';
 import { Repository } from 'typeorm';
-import { User } from '../users/user.entity';
-import { Course } from '../courses/course.entity';
+import { User } from '../users/entity/user.entity';
+import { Course } from '../courses/entities/course.entity';
 
 @Injectable()
 export class StudentCoursesService {

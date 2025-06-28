@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Module } from '../modules/module.entity';
+import { ModuleEntity } from '../../modules/entity/module.entity';
 
 @Entity()
 export class Lesson {
@@ -12,6 +12,8 @@ export class Lesson {
   @Column({ type: 'text' })
   content: string;
 
-  @ManyToOne(() => Module, (module) => module.lessons, { onDelete: 'CASCADE' })
-  module: Module;
+  @ManyToOne(() => ModuleEntity, (module) => module.lessons, {
+    onDelete: 'CASCADE',
+  })
+  module: ModuleEntity;
 }
