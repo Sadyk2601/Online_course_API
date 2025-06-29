@@ -21,7 +21,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   const reflector = app.get(Reflector);
-  app.useGlobalGuards(new JwtAuthGuard(), new RolesGuard(reflector));
+  app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
 
   await app.listen(Number(process.env.PORT));
 }
