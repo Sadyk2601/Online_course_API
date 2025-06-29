@@ -1,4 +1,3 @@
-// src/student_courses/student-courses.module.ts
 import { Module } from '@nestjs/common';
 import { StudentCoursesService } from './student-course.service';
 import { StudentCoursesController } from './student-course.controller';

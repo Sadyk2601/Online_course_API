@@ -1,4 +1,3 @@
-// src/student_courses/student-courses.service.ts
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentCourse } from './entity/student-course.entity';

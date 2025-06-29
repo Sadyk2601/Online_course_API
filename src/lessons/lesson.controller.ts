@@ -1,4 +1,3 @@
-// src/lessons/lesson.controller.ts
 import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';

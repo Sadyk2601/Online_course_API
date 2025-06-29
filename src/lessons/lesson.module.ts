@@ -1,4 +1,3 @@
-// src/lessons/lessons.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Lesson } from './entity/lesson.entity';

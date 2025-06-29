@@ -4,7 +4,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { Public } from 'src/auth/decorator/public.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 
 @Controller('modules/:moduleId/assignment')
 @UseGuards(JwtAuthGuard)
@@ -16,8 +16,8 @@ export class AssignmentsController {
   submitAssignment(
     @Body() dto: CreateAssignmentDto,
     @Param('moduleId') moduleId: string,
-    @CurrentUser() user: any,
+    @Req() req: RequestWithUser,
   ) {
-    return this.assignmentsService.submit(dto, user.sub, moduleId);
+    return this.assignmentsService.submit(dto, req.user.sub, moduleId);
   }
 }
