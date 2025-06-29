@@ -6,14 +6,20 @@ import {
   Param,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ModulesService } from './module.service';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorator/public.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Modules')
 @Controller('modules')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ModulesController {
   constructor(private readonly modulesService: ModulesService) {}
 
@@ -24,12 +30,14 @@ export class ModulesController {
   }
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Get all modules' })
   findAll() {
     return this.modulesService.findAll();
   }
 
   @Get('course/:courseId')
+  @Public()
   @ApiOperation({ summary: 'Get modules by course ID' })
   findByCourse(@Param('courseId') courseId: string) {
     return this.modulesService.findByCourse(courseId);

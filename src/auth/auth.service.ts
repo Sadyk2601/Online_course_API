@@ -17,9 +17,9 @@ export class AuthService {
     private usersService: UsersService,
   ) {}
 
-  async register(dto: RegisterDto) {
-    const userExists = await this.usersService.findByEmail(dto.email);
-    if (userExists) throw new ForbiddenException('Email already registered');
+  async register(dto: RegisterDto, res: Response) {
+    const exists = await this.usersService.findByEmail(dto.email);
+    if (exists) throw new ForbiddenException('Email already registered');
 
     const hashed = await bcrypt.hash(dto.password, 10);
     const user = await this.usersService.create({
@@ -27,53 +27,54 @@ export class AuthService {
       password: hashed,
     });
 
-    return {
-      message: 'Registered successfully',
-      user: { id: user.id, email: user.email },
-    };
+    const tokens = this.generateTokens(user.id, user.email, user.role);
+    this.setRefreshTokenCookie(res, tokens.refresh_token);
+
+    return { access_token: tokens.access_token };
   }
 
   async login(dto: LoginDto, res: Response) {
     const user = await this.usersService.findByEmail(dto.email);
-    if (!user || !(await bcrypt.compare(dto.password, user.password))) {
+    if (!user || !(await bcrypt.compare(dto.password, user.password)))
       throw new UnauthorizedException('Invalid credentials');
-    }
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
-    const access_token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: '15m',
-    });
+    const tokens = this.generateTokens(user.id, user.email, user.role);
+    this.setRefreshTokenCookie(res, tokens.refresh_token);
 
-    const refresh_token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: '7d',
-    });
-
-    res.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: false, // ставь true на проде
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    return { access_token };
+    return { access_token: tokens.access_token };
   }
 
-  async refreshToken(refreshToken: string) {
+  async refreshToken(refresh_token: string) {
     try {
-      const payload = await this.jwtService.verifyAsync(refreshToken, {
+      const payload = await this.jwtService.verifyAsync(refresh_token, {
         secret: process.env.JWT_SECRET,
       });
-
-      const newAccessToken = this.jwtService.sign(
-        { sub: payload.sub, email: payload.email, role: payload.role },
-        { secret: process.env.JWT_SECRET, expiresIn: '15m' },
-      );
-
-      return { access_token: newAccessToken };
-    } catch (err) {
+      return this.generateTokens(payload.sub, payload.email, payload.role);
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  private generateTokens(id: string, email: string, role: string) {
+    const payload = { sub: id, email, role };
+    return {
+      access_token: this.jwtService.sign(payload, {
+        secret: process.env.JWT_SECRET,
+        expiresIn: '15m',
+      }),
+      refresh_token: this.jwtService.sign(payload, {
+        secret: process.env.JWT_SECRET,
+        expiresIn: '7d',
+      }),
+    };
+  }
+
+  private setRefreshTokenCookie(res: Response, token: string) {
+    res.cookie('refresh_token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
   }
 }

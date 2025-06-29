@@ -7,19 +7,19 @@ import { User } from './entity/user.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private repo: Repository<User>,
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  create(data: Partial<User>) {
-    const user = this.repo.create(data);
-    return this.repo.save(user);
-  }
-
   findByEmail(email: string) {
-    return this.repo.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email } });
   }
 
   findById(id: string) {
-    return this.repo.findOne({ where: { id } });
+    return this.userRepository.findOne({ where: { id } });
+  }
+
+  create(data: Partial<User>) {
+    const user = this.userRepository.create(data);
+    return this.userRepository.save(user);
   }
 }
